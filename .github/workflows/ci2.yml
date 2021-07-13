@@ -5,7 +5,12 @@ on:
      branches:
        - master
        - 'release/*'
+       - gha-kill-old
    pull_request:
+
+concurrency:
+  group: ci2-${{ github.head_ref }}
+  cancel-in-progress: true
 
 jobs:
 
