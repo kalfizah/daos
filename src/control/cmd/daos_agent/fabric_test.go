@@ -349,7 +349,7 @@ func TestAgent_NUMAFabric_getNextDevice(t *testing.T) {
 				},
 			},
 			node:   0,
-			expErr: FabricNotFoundErr,
+			expErr: errors.New("no fabric interfaces"),
 		},
 		"single item": {
 			nf: &NUMAFabric{

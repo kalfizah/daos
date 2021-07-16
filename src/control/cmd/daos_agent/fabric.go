@@ -8,6 +8,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/daos-stack/daos/src/control/lib/netdetect"
 	"github.com/daos-stack/daos/src/control/logging"
@@ -16,7 +17,9 @@ import (
 
 // FabricNotFoundErr is the error returned when no appropriate fabric interface
 // was found.
-var FabricNotFoundErr = errors.New("no suitable fabric interface found")
+func FabricNotFoundErr(netDevClass uint32) error {
+	return fmt.Errorf("no suitable fabric interface found of type %q", netdetect.DevClassName(netDevClass))
+}
 
 // FabricInterface represents a generic fabric interface.
 type FabricInterface struct {
@@ -98,7 +101,7 @@ func (n *NUMAFabric) getDeviceFromNUMA(numaNode int, netDevClass uint32) (*Fabri
 
 		return fabricIF, nil
 	}
-	return nil, FabricNotFoundErr
+	return nil, FabricNotFoundErr(netDevClass)
 }
 
 func (n *NUMAFabric) getNextDevice(numaNode int) (*FabricInterface, error) {
@@ -121,7 +124,7 @@ func (n *NUMAFabric) findOnRemoteNUMA(netDevClass uint32) (*FabricInterface, err
 			return fi, nil
 		}
 	}
-	return nil, FabricNotFoundErr
+	return nil, FabricNotFoundErr(netDevClass)
 }
 
 // getNextDevIndex is a simple round-robin load balancing scheme
@@ -136,7 +139,7 @@ func (n *NUMAFabric) getNextDevIndex(numaNode int) (int, error) {
 		n.currentNumaDevIdx[numaNode] = (deviceIndex + 1) % numDevs
 		return deviceIndex, nil
 	}
-	return 0, FabricNotFoundErr
+	return 0, fmt.Errorf("no fabric interfaces on NUMA node %d", numaNode)
 }
 
 func newNUMAFabric(log logging.Logger) *NUMAFabric {
