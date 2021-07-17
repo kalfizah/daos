@@ -178,8 +178,8 @@ func TestAgent_NUMAFabric_GetDevice(t *testing.T) {
 			expErr: errors.New("nil NUMAFabric"),
 		},
 		"empty": {
-			nf:     newNUMAFabric(nil),
-			expErr: errors.New("no suitable fabric interface"),
+			nf:        newNUMAFabric(nil),
+			expResult: DefaultFabricInterface,
 		},
 		"type not found": {
 			nf: &NUMAFabric{

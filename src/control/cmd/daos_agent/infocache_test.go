@@ -162,13 +162,7 @@ func TestAgent_localFabricCache_Cache(t *testing.T) {
 			lfc:       &localFabricCache{},
 			expCached: true,
 			expResult: &NUMAFabric{
-				numaMap: map[int][]*FabricInterface{
-					0: {
-						{
-							Name: "lo",
-						},
-					},
-				},
+				numaMap: map[int][]*FabricInterface{},
 			},
 		},
 		"successfully cached": {

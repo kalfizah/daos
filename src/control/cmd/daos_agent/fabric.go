@@ -28,6 +28,12 @@ type FabricInterface struct {
 	NetDevClass uint32 `yaml:"net_dev_class"`
 }
 
+// DefaultFabricInterface is the one used if no devices are found on the system.
+var DefaultFabricInterface = &FabricInterface{
+	Name:   "lo",
+	Domain: "lo",
+}
+
 // NUMAFabric represents a set of fabric interfaces organized by NUMA node.
 type NUMAFabric struct {
 	log logging.Logger
@@ -71,6 +77,11 @@ func (n *NUMAFabric) NumNUMANodes() int {
 func (n *NUMAFabric) GetDevice(numaNode int, netDevClass uint32) (*FabricInterface, error) {
 	if n == nil {
 		return nil, errors.New("nil NUMAFabric")
+	}
+
+	if n.NumNUMANodes() == 0 {
+		n.log.Infof("No fabric interfaces found, using default interface %q", DefaultFabricInterface.Name)
+		return DefaultFabricInterface, nil
 	}
 
 	fi, err := n.getDeviceFromNUMA(numaNode, netDevClass)
@@ -185,6 +196,10 @@ func NUMAFabricFromScan(ctx context.Context, log logging.Logger, scan []*netdete
 		fabric.defaultNumaNode = numa
 		log.Debugf("The default NUMA node is: %d", numa)
 		break
+	}
+
+	if fabric.NumNUMANodes() == 0 {
+		log.Info("No network devices detected in fabric scan\n")
 	}
 
 	return fabric

@@ -122,15 +122,6 @@ func (c *localFabricCache) Cache(ctx context.Context, scan []*netdetect.FabricSc
 
 	c.localNUMAFabric = NUMAFabricFromScan(ctx, c.log, scan, c.getDevAlias)
 
-	if _, exists := c.localNUMAFabric.numaMap[c.localNUMAFabric.defaultNumaNode]; !exists {
-		c.log.Info("No network devices detected in fabric scan\n")
-
-		defaultIF := &FabricInterface{
-			Name: defaultNetworkDevice,
-		}
-		c.localNUMAFabric.Add(c.localNUMAFabric.defaultNumaNode, defaultIF)
-	}
-
 	c.initialized.SetTrue()
 	return nil
 }
